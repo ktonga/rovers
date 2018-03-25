@@ -7,10 +7,8 @@ class MoverCheck extends Properties("Functions property-based testing") with Arb
   property("coordinates is always within the plateau boundary") =
     forAll { (upperRight: Coordinate, cmds: List[Command]) =>
       forAll(positionGenerator(upperRight).arbitrary) { (initPos: Position) =>
-        val Coordinate(maxX, maxY) = upperRight
         val finalPos = Mover.executeCommands(upperRight)(initPos)(cmds)
-        val Coordinate(x, y) = finalPos.coord
-        0 <= x && x <= maxX && 0 <= y && y <= maxY
+        Utility.withPlateau(coord = finalPos.coord, upperRight = upperRight)
       }
     }
 

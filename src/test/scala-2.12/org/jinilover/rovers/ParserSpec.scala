@@ -27,15 +27,17 @@ class ParserSpec extends FlatSpec with Matchers {
 
   it should ("parse position correctly") in {
     val upperRight = Coordinate(5, 5)
-    parsePosition(upperRight, "1 2 E") shouldBe \/-(Position(Coordinate(1, 2), E))
-    parsePosition(upperRight, "1 2 S") shouldBe \/-(Position(Coordinate(1, 2), S))
-    parsePosition(upperRight, "1 2 W") shouldBe \/-(Position(Coordinate(1, 2), W))
-    parsePosition(upperRight, "1 2 N") shouldBe \/-(Position(Coordinate(1, 2), N))
-    parsePosition(upperRight, "1 2 e") shouldBe -\/("Invalid direction: e")
-    parsePosition(upperRight, "1 x2 N") shouldBe -\/("""Number format error For input string: "x2"""")
-    parsePosition(upperRight, "1 2 2 N") shouldBe -\/("""4 items in "1 2 2 N", there should be 3 items""")
-    parsePosition(upperRight, "0 0 E") shouldBe \/-(Position(Coordinate(0, 0), E))
-    parsePosition(upperRight, "5 5 E") shouldBe \/-(Position(Coordinate(5, 5), E))
-    parsePosition(upperRight, "5 6 E") shouldBe -\/(s"(5, 6) not within (0, 0) to $upperRight")
+    parsePosition(upperRight, Nil, "1 2 E") shouldBe \/-(Position(Coordinate(1, 2), E))
+    parsePosition(upperRight, Nil, "1 2 S") shouldBe \/-(Position(Coordinate(1, 2), S))
+    parsePosition(upperRight, Nil, "1 2 W") shouldBe \/-(Position(Coordinate(1, 2), W))
+    parsePosition(upperRight, Nil, "1 2 N") shouldBe \/-(Position(Coordinate(1, 2), N))
+    parsePosition(upperRight, Nil, "1 2 e") shouldBe -\/("Invalid direction: e")
+    parsePosition(upperRight, Nil, "1 x2 N") shouldBe -\/("""Number format error For input string: "x2"""")
+    parsePosition(upperRight, Nil, "1 2 2 N") shouldBe -\/("""4 items in "1 2 2 N", there should be 3 items""")
+    parsePosition(upperRight, Nil, "0 0 E") shouldBe \/-(Position(Coordinate(0, 0), E))
+    parsePosition(upperRight, Nil, "5 5 E") shouldBe \/-(Position(Coordinate(5, 5), E))
+    parsePosition(upperRight, Nil, "5 6 E") shouldBe -\/(s"(5, 6) not within (0, 0) to $upperRight")
+    parsePosition(upperRight, List(Coordinate(1, 3), Coordinate(1,2)), "1 2 E") shouldBe
+      -\/("(1, 2) is occupied by other rover already")
   }
 }

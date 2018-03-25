@@ -18,7 +18,8 @@ object FileProcessor {
       case (\/-(SetupPlateau), s) =>
         Parser.parseUpperRight(s).map{ upperRight => LaunchNextRover(upperRight, Mover.executeCommands(upperRight)) }
       case (\/-(LaunchNextRover(upperRight, f)), s) =>
-        Parser.parsePosition(upperRight, s).map{ pos => LaunchedRover(upperRight, f(pos)) }
+//        Parser.parsePosition(upperRight, s).map{ pos => LaunchedRover(upperRight, f(pos)) }
+???
       case (\/-(LaunchedRover(upperRight, f)), s) =>
         Parser.parseCmds(s).map { cmds =>
           println(f(cmds).format)

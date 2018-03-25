@@ -1,35 +1,66 @@
 package org.jinilover.rovers
 
+import scalaz.{-\/, \/-}
+
 object Mover {
   // execute the whole series of commands
-  def executeCommands(upperRight: Coordinate)(initialPos: Position)(cmds: List[Command]): Position =
-    cmds.foldLeft(initialPos)(executeCommand(upperRight, _, _))
+  def executeCommands(occupied: List[Coordinate])(upperRight: Coordinate)(initialPos: Position)(cmds: List[Command]): MaybeSuccess[Position] =
+    cmds.foldLeft[MaybeSuccess[Position]](initialPos) {
+      executeCommand(occupied, upperRight, _, _)
+    }
 
   // execute single command
-  def executeCommand(upperRight: Coordinate, origPos: Position, cmd: Command): Position = {
+  def executeCommand(occupied: List[Coordinate], 
+                     upperRight: Coordinate, 
+                     origPos: Position, 
+                     cmd: Command): MaybeSuccess[Position] = {
     val Coordinate(maxX, maxY) = upperRight
     (origPos, cmd) match {
-      case (Position(c@Coordinate(x, y), E), M) => origPos.copy(coord = c.copy(x = changeStep(x, 1, maxX)))
-      case (Position(c@Coordinate(x, y), W), M) => origPos.copy(coord = c.copy(x = changeStep(x, -1, maxX)))
-      case (Position(c@Coordinate(x, y), S), M) => origPos.copy(coord = c.copy(y = changeStep(y, -1, maxY)))
-      case (Position(c@Coordinate(x, y), N), M) => origPos.copy(coord = c.copy(y = changeStep(y, 1, maxY)))
-      case (Position(_, E), L) | (Position(_, W), R) => origPos.copy(heading = turnNorS(false))
-      case (Position(_, E), _) | (Position(_, W), _) => origPos.copy(heading = turnNorS(true))
-      case (Position(_, S), L) | (Position(_, N), R) => origPos.copy(heading = turnEorW(false))
-      case _ => origPos.copy(heading = turnEorW(true))
+      case (Position(c, E), M) =>
+        moveHorizontal(changeStep(c.x, 1, maxX))(c)(occupied)(origPos)
+      case (Position(c, W), M) =>
+        moveHorizontal(changeStep(c.x, -1, maxX))(c)(occupied)(origPos)
+      case (Position(c, S), M) =>
+        moveVertical(changeStep(c.y, -1, maxY))(c)(occupied)(origPos)
+      case (Position(c, N), M) =>
+        moveVertical(changeStep(c.y, 1, maxY))(c)(occupied)(origPos)
+      case (Position(_, E), L) | (Position(_, W), R) => rotateNorS(false)(origPos)
+      case (Position(_, E), _) | (Position(_, W), _) => rotateNorS(true)(origPos)
+      case (Position(_, S), L) | (Position(_, N), R) => rotateEorW(false)(origPos)
+      case _ => rotateEorW(true)(origPos)
     }
   }
 
-  val turn: Direction => Direction => Boolean => Direction =
+  val changeDirection: Direction => Direction => Boolean => Direction =
     left => right => pickRight => if (pickRight) right else left
 
-  val turnNorS: Boolean => Direction = turn(N)(S)
-  val turnEorW: Boolean => Direction = turn(E)(W)
+  val rotateNorS: Boolean => Position => MaybeSuccess[Position] = 
+    changeDirection(N)(S) andThen rotateRover
+  
+  val rotateEorW: Boolean => Position => MaybeSuccess[Position] = 
+    changeDirection(E)(W) andThen rotateRover
+  
+  val rotateRover: Direction => Position => MaybeSuccess[Position] = 
+    heading => origPos => \/-(origPos.copy(heading = heading))
 
   def changeStep(n: Int, change: Int, limit: Int): Int = {
     val newN = n + change
     if (newN < 0 || newN > limit) n else newN
   }
+
+  val moveHorizontal: Int => Coordinate => List[Coordinate] => Position => MaybeSuccess[Position] =
+    newX => {(_: Coordinate).copy(x = newX)} andThen moveRover
+
+  val moveVertical: Int => Coordinate => List[Coordinate] => Position => MaybeSuccess[Position] =
+    newY => {(_: Coordinate).copy(y = newY)} andThen moveRover
+
+  val moveRover: Coordinate => List[Coordinate] => Position => MaybeSuccess[Position] =
+    newCoord => occupied => origPos =>
+      if (occupied contains newCoord)
+        -\/(s"(${newCoord.x}, ${newCoord.y}) is already occuped by another rover")
+      else
+        \/-(origPos.copy(coord = newCoord))
+
 
 
 }
