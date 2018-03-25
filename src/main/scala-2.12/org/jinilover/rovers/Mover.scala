@@ -1,11 +1,19 @@
 package org.jinilover.rovers
 
 object Mover {
-  // execute the whole series of commands
+  /**
+   * execute the whole series of commands
+   */
   def executeCommands(upperRight: Coordinate)(initialPos: Position)(cmds: List[Command]): Position =
     cmds.foldLeft(initialPos)(executeCommand(upperRight, _, _))
 
-  // execute single command
+  /**
+   * execute single command
+   * @param upperRight
+   * @param origPos
+   * @param cmd
+   * @return
+   */
   def executeCommand(upperRight: Coordinate, origPos: Position, cmd: Command): Position = {
     val Coordinate(maxX, maxY) = upperRight
     (origPos, cmd) match {

@@ -3,6 +3,9 @@ package org.jinilover.rovers
 import org.scalacheck.Properties
 import org.scalacheck.Prop._
 
+/**
+ * Property based testing for the mover
+ */
 class MoverCheck extends Properties("Functions property-based testing") with Arbitraries {
   property("coordinates is always within the plateau boundary") =
     forAll { (upperRight: Coordinate, cmds: List[Command]) =>

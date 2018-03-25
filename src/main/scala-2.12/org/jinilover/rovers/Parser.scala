@@ -2,6 +2,9 @@ package org.jinilover.rovers
 
 import scalaz._, Scalaz._
 
+/**
+ * Functions for parsing the text read from the input file
+ */
 object Parser {
   def parseCoordinate(x: String, y: String): MaybeSuccess[Coordinate] =
     for {

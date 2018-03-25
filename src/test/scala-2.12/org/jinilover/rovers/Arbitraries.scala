@@ -2,6 +2,9 @@ package org.jinilover.rovers
 
 import org.scalacheck.{Gen, Arbitrary}
 
+/**
+ * Generates random data for property-based testing
+ */
 trait Arbitraries {
   private val MAX_X = 25
   private val MAX_Y = MAX_X
