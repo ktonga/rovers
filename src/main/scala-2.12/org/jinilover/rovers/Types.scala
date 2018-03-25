@@ -32,10 +32,10 @@ trait Types {
   sealed trait ProcessStatus
   // about to parse the upper right coordinate to setup the plateau
   case object SetupPlateau extends ProcessStatus
-  // about to parse the next rover's position
-  case class LaunchNextRover(upperRight: Coordinate,
+  // about to parse the next rover's position for landing
+  case class LandNextRover(upperRight: Coordinate,
                              f: Position => List[Command] => Position) extends ProcessStatus
-  // about to parse the commands
-  case class LaunchedRover(upperRight: Coordinate,
+  // about to parse the commands to navigate the landed rover
+  case class NavigateRover(upperRight: Coordinate,
                            f: List[Command] => Position) extends ProcessStatus
 }

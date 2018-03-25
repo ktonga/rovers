@@ -15,3 +15,11 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % scalaTestV % "test",
   "org.scalacheck" %% "scalacheck" % scalaCheckV % "test"
 )
+
+scalacOptions ++= Seq(
+  "-target:jvm-1.8",
+  "-Xfatal-warnings",
+  "-Ywarn-unused",
+  "-Ywarn-unused-import",
+  "-deprecation"
+)

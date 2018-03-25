@@ -23,9 +23,7 @@ object Parser {
       case x :: y :: d :: Nil =>
         for {
           coord <- parseCoordinate(x, y)
-          Coordinate(maxX, maxY) = upperRight
-          Coordinate(x, y) = coord
-          _ <- if (0 <= x && x <= maxX && 0 <= y && y <= maxY) \/-(())
+          _ <- if (Utility.withPlateau(coord = coord, upperRight = upperRight)) \/-(())
                else -\/(s"($x, $y) not within (0, 0) to $upperRight")
           dir <- parseDirection(d)
         } yield Position(coord, dir)
